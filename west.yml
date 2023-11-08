@@ -9,6 +9,9 @@ manifest:
     - name: zephyrproject-rtos
       url-base: https://github.com/zephyrproject-rtos
 
+    - name: openocd
+      url-base: https://github.com/openocd-org
+
   projects:
     - name: zephyr
       remote: zephyrproject-rtos
@@ -20,3 +23,8 @@ manifest:
           - cmsis      # required by the ARM port
           - hal_nordic # required by the custom_plank board (Nordic based)
           - hal_stm32  # required by the nucleo_f302r8 board (STM32 based)
+          - hal_rpi_pico
+    - name: openocd
+      remote: openocd
+      revision: v0.12.0
+      
