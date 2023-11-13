@@ -57,7 +57,15 @@ static APP_BMEM bool connected;
 
 #include <zephyr/drivers/gpio.h>
 #define SW0_NODE DT_ALIAS(sw0)
-const struct gpio_dt_spec sw = GPIO_DT_SPEC_GET(SW0_NODE, gpios);
+static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(SW0_NODE, gpios,
+							      {0});
+static struct gpio_callback button_cb_data;
+
+void button_pressed(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
+}
 
 #if defined(CONFIG_MQTT_LIB_TLS)
 
@@ -227,7 +235,7 @@ static char *get_mqtt_payload(enum mqtt_qos qos)
 #else
 	static APP_DMEM char payload[] = "{value: 0}";
 
-	payload[strlen(payload) - 2] = '0' + gpio_pin_get_dt(&sw);
+	payload[strlen(payload) - 2] = '0' + gpio_pin_get_dt(&button);
 #endif
 
 	return payload;
@@ -455,7 +463,7 @@ static int publisher(void)
 		SUCCESS_OR_BREAK(rc);
 
 		rc = publish(&client_ctx, MQTT_QOS_0_AT_MOST_ONCE);
-		PRINT_RESULT("mqtt_publish", rc);
+		// PRINT_RESULT("mqtt_publish", rc);
 		SUCCESS_OR_BREAK(rc);
 
 		// rc = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
@@ -520,6 +528,29 @@ static K_HEAP_DEFINE(app_mem_pool, 1024 * 2);
 
 int main(void)
 {
+	int ret;
+	if (!gpio_is_ready_dt(&button)) {
+		printk("Error: button device %s is not ready\n",
+		       button.port->name);
+		return 0;
+	}
+
+	ret = gpio_pin_configure_dt(&button, GPIO_INPUT);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, button.port->name, button.pin);
+		return 0;
+	}
+
+	ret = gpio_pin_interrupt_configure_dt(&button,
+					      GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, button.port->name, button.pin);
+		return 0;
+	}
+	gpio_init_callback(&button_cb_data, button_pressed, BIT(button.pin));
+	gpio_add_callback(button.port, &button_cb_data);
 #if defined(CONFIG_MQTT_LIB_TLS)
 	int rc;
 
