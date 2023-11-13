@@ -1,0 +1,7 @@
+/ {
+	chosen {
+		zephyr,ppp_uart=&usart2;
+		zephyr,console = &usart1;
+	};
+};
+

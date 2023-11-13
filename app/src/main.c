@@ -55,6 +55,10 @@ static APP_BMEM int nfds;
 
 static APP_BMEM bool connected;
 
+#include <zephyr/drivers/gpio.h>
+#define SW0_NODE DT_ALIAS(sw0);
+const struct gpio_dt_spec sw0 = GPIO_DT_SPEC_GET(SW0_NODE, gpios);
+
 #if defined(CONFIG_MQTT_LIB_TLS)
 
 #include "test_certs.h"
@@ -221,9 +225,9 @@ static char *get_mqtt_payload(enum mqtt_qos qos)
 	snprintk(payload, sizeof(payload), "{d:{temperature:%d}}",
 		 (uint8_t)sys_rand32_get());
 #else
-	static APP_DMEM char payload[] = "DOORS:OPEN_QoSx";
+	static APP_DMEM char payload[] = "x";
 
-	payload[strlen(payload) - 1] = '0' + qos;
+	payload[strlen(payload) - 1] = '0' + gpio_pin_get_dt(&sw0);
 #endif
 
 	return payload;
@@ -235,7 +239,7 @@ static char *get_mqtt_topic(void)
 	return "iot-2/type/"BLUEMIX_DEVTYPE"/id/"BLUEMIX_DEVID
 	       "/evt/"BLUEMIX_EVENT"/fmt/"BLUEMIX_FORMAT;
 #else
-	return "sensors";
+	return "sw0";
 #endif
 }
 
@@ -454,22 +458,22 @@ static int publisher(void)
 		PRINT_RESULT("mqtt_publish", rc);
 		SUCCESS_OR_BREAK(rc);
 
-		rc = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
-		SUCCESS_OR_BREAK(rc);
+		// rc = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
+		// SUCCESS_OR_BREAK(rc);
 
-		rc = publish(&client_ctx, MQTT_QOS_1_AT_LEAST_ONCE);
-		PRINT_RESULT("mqtt_publish", rc);
-		SUCCESS_OR_BREAK(rc);
+		// rc = publish(&client_ctx, MQTT_QOS_1_AT_LEAST_ONCE);
+		// PRINT_RESULT("mqtt_publish", rc);
+		// SUCCESS_OR_BREAK(rc);
 
-		rc = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
-		SUCCESS_OR_BREAK(rc);
+		// rc = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
+		// SUCCESS_OR_BREAK(rc);
 
-		rc = publish(&client_ctx, MQTT_QOS_2_EXACTLY_ONCE);
-		PRINT_RESULT("mqtt_publish", rc);
-		SUCCESS_OR_BREAK(rc);
+		// rc = publish(&client_ctx, MQTT_QOS_2_EXACTLY_ONCE);
+		// PRINT_RESULT("mqtt_publish", rc);
+		// SUCCESS_OR_BREAK(rc);
 
-		rc = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
-		SUCCESS_OR_BREAK(rc);
+		// rc = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
+		// SUCCESS_OR_BREAK(rc);
 
 		r = 0;
 	}

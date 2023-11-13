@@ -1,0 +1,27 @@
+menu "panduzaHA-ng (/home/cadet/pzaHA-workspace/panduzaHA-ng)"
+osource "/home/cadet/pzaHA-workspace/panduzaHA-ng/Kconfig"
+config ZEPHYR_PANDUZAHA_NG_MODULE
+	bool
+	default y
+endmenu
+menu "cmsis (/home/cadet/pzaHA-workspace/modules/hal/cmsis)"
+osource "$(ZEPHYR_CMSIS_KCONFIG)"
+config ZEPHYR_CMSIS_MODULE
+	bool
+	default y
+endmenu
+menu "hal_nordic (/home/cadet/pzaHA-workspace/modules/hal/nordic)"
+osource "$(ZEPHYR_HAL_NORDIC_KCONFIG)"
+config ZEPHYR_HAL_NORDIC_MODULE
+	bool
+	default y
+endmenu
+menu "hal_rpi_pico (/home/cadet/pzaHA-workspace/modules/hal/rpi_pico)"
+osource "$(ZEPHYR_HAL_RPI_PICO_KCONFIG)"
+config ZEPHYR_HAL_RPI_PICO_MODULE
+	bool
+	default y
+endmenu
+config ZEPHYR_STM32_MODULE
+   bool
+   default y

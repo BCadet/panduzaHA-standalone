@@ -1,0 +1,5 @@
+"panduzaHA-ng":"/home/cadet/pzaHA-workspace/panduzaHA-ng":"/home/cadet/pzaHA-workspace/panduzaHA-ng"
+"cmsis":"/home/cadet/pzaHA-workspace/modules/hal/cmsis":"${ZEPHYR_CMSIS_CMAKE_DIR}"
+"hal_nordic":"/home/cadet/pzaHA-workspace/modules/hal/nordic":"${ZEPHYR_HAL_NORDIC_CMAKE_DIR}"
+"hal_rpi_pico":"/home/cadet/pzaHA-workspace/modules/hal/rpi_pico":"${ZEPHYR_HAL_RPI_PICO_CMAKE_DIR}"
+"stm32":"/home/cadet/pzaHA-workspace/modules/hal/stm32":"/home/cadet/pzaHA-workspace/modules/hal/stm32"
