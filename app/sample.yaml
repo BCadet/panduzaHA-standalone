@@ -1,16 +1,30 @@
-# This file is provided so that the application can be compiled using Twister,
-# the Zephyr testing tool. In this file, multiple combinations can be specified,
-# so that you can easily test all of them locally or in CI.
 sample:
-  description: Example application
-  name: example-application 
+  description: MQTT publisher sample application
+  name: MQTT publisher
 common:
-  build_only: true
-  integration_platforms:
-    - custom_plank
-    - nucleo_f302r8
+  harness: net
+  tags:
+    - net
+    - mqtt
 tests:
-  app.default: {}
-  app.debug:
-    extra_overlay_confs:
-      - debug.conf
+  sample.net.mqtt_publisher:
+    platform_allow:
+      - frdm_k64f
+      - qemu_x86
+      - pinnacle_100_dvk
+      - mg100
+    integration_platforms:
+      - qemu_x86
+  sample.net.mqtt_publisher.userspace:
+    platform_allow:
+      - frdm_k64f
+      - qemu_x86
+    integration_platforms:
+      - qemu_x86
+    extra_args: CONFIG_USERSPACE=y
+  sample.net.mqtt_publisher.bt:
+    platform_allow: 96b_nitrogen
+    tags:
+      - net
+      - mqtt
+      - bluetooth

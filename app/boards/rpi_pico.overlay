@@ -1,16 +1,31 @@
-/*
- * Copyright (c) 2021 Nordic Semiconductor ASA
- * SPDX-License-Identifier: Apache-2.0
- */
-
-/* This devicetree overlay file will be automatically picked by the Zephyr
- * build system when building the sample for the nucleo_f302r8 board. It shows
- * how the example-application can be built on sample boards already provided
- * by Zephyr.
- */
+#include <zephyr/dt-bindings/input/input-event-codes.h>
 
 / {
 	chosen {
-		zephyr,uart_pipe=&uart0;
+		zephyr,ppp_uart=&snippet_cdc_acm_console_uart;
+		zephyr,console = &uart0;
 	};
+
+	buttons {
+		compatible = "gpio-keys";
+		button1: button_1 {
+			label = "button1";
+			gpios = <&gpio0 12 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			zephyr,code = <INPUT_KEY_0>;
+		};
+	};
+
+	aliases {
+		sw0 = &button1;
+	};
+};
+
+&zephyr_udc0 {
+	snippet_cdc_acm_console_uart: snippet_cdc_acm_console_uart {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};
+
+&gpio0 {
+	status = "okay";
 };

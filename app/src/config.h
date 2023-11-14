@@ -21,6 +21,7 @@
 #define SERVER_ADDR		"2001:db8::2"
 #else
 #define ZEPHYR_ADDR		"192.0.1.1"
+// #define SERVER_ADDR		"172.17.0.1"
 #define SERVER_ADDR		"192.0.1.2"
 #endif
 #endif
@@ -51,17 +52,6 @@
 
 #define APP_MQTT_BUFFER_SIZE	128
 
-#define MQTT_CLIENTID		"zephyr_publisher"
-
-/* Set the following to 1 to enable the Bluemix topic format */
-#define APP_BLUEMIX_TOPIC	0
-
-/* These are the parameters for the Bluemix topic format */
-#if APP_BLUEMIX_TOPIC
-#define BLUEMIX_DEVTYPE		"sensor"
-#define BLUEMIX_DEVID		"carbon"
-#define BLUEMIX_EVENT		"status"
-#define BLUEMIX_FORMAT		"json"
-#endif
+#define MQTT_CLIENTID		"PanduzaHA-ng on " CONFIG_BOARD
 
 #endif

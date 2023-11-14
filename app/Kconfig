@@ -1,18 +1,9 @@
-# Copyright (c) 2021 Nordic Semiconductor ASA
+# Config options for mqtt_publisher sample application
+
+# Copyright (c) 2020 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
-#
-# This file is the application Kconfig entry point. All application Kconfig
-# options can be defined here or included via other application Kconfig files.
-# You can browse these options using the west targets menuconfig (terminal) or
-# guiconfig (GUI).
 
-menu "Zephyr"
-source "Kconfig.zephyr"
-endmenu
-
-module = APP
-module-str = APP
-source "subsys/logging/Kconfig.template.log_config"
+mainmenu "Networking mqtt_publisher sample application"
 
 config NET_SAMPLE_APP_MAX_ITERATIONS
 	int "Number of times to Publish sample MQTT messages"
@@ -29,3 +20,5 @@ config NET_SAMPLE_APP_MAX_CONNECTIONS
 	  Number of times to connect to the MQTT server. With each connection
 	  send NET_SAMPLE_APP_MAX_ITERATIONS amount of MQTT sample messages.
 	  A value of zero means to continue forever.
+
+source "Kconfig.zephyr"
