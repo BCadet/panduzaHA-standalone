@@ -8,5 +8,6 @@ project(PanduzaHA-ng)
 set(app_sources
     src/main.c
     src/app_mqtt.c
+    src/panduza.c
 )
 target_sources(app PRIVATE ${app_sources})

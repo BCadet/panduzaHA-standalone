@@ -5,4 +5,7 @@
 #include "config.h"
 
 #define PANDUZA_TOPIC_BASE "pza/"CONFIG_PANDUZA_BENCH_NAME"/"CONFIG_PANDUZA_DEVICE_NAME
+
+void panduza_publish_info(void);
+
 #endif

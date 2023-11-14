@@ -149,11 +149,16 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 
 	case MQTT_EVT_PUBLISH:
 		LOG_INF("PUBLISH event");
-		LOG_INF("topic=%s [%d]", evt->param.publish.message.topic.topic.utf8, evt->param.publish.message.payload.len);
-		mqtt_read_publish_payload_blocking(&app.client, payload, evt->param.publish.message.payload.len);
-		// payload[evt->param.publish.message.payload.len] = '\0';
-		err = json_obj_parse(payload, evt->param.publish.message.payload.len, obj_array_descr, ARRAY_SIZE(obj_array_descr), &out);
-		LOG_INF("err=%d/%d struct out.test=%d out.toto=%s", __builtin_popcount(err), ARRAY_SIZE(obj_array_descr), out.test, out.toto);
+		LOG_DBG("topic=%s [%d]", evt->param.publish.message.topic.topic.utf8, evt->param.publish.message.payload.len);
+		if(strncmp(evt->param.publish.message.topic.topic.utf8, "pza", evt->param.publish.message.topic.topic.size) == 0)
+			panduza_publish_info();
+		else
+		{
+			mqtt_read_publish_payload_blocking(&app.client, payload, evt->param.publish.message.payload.len);
+			// payload[evt->param.publish.message.payload.len] = '\0';
+			err = json_obj_parse(payload, evt->param.publish.message.payload.len, obj_array_descr, ARRAY_SIZE(obj_array_descr), &out);
+			LOG_INF("err=%d/%d struct out.test=%d out.toto=%s", __builtin_popcount(err), ARRAY_SIZE(obj_array_descr), out.test, out.toto);
+		}
 		break;
 
 	case MQTT_EVT_SUBACK:
@@ -386,6 +391,11 @@ static int try_to_connect(struct mqtt_client *client)
 		struct mqtt_topic topics[] = {{
 			.topic = {.utf8 = "test",
 				.size = strlen("test")},
+			.qos = MQTT_QOS_0_AT_MOST_ONCE,
+		},
+		{
+			.topic = {.utf8 = "pza",
+				.size = strlen("pza")},
 			.qos = MQTT_QOS_0_AT_MOST_ONCE,
 		}};
 		const struct mqtt_subscription_list sub_list = {
