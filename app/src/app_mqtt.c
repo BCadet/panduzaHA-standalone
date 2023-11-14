@@ -155,7 +155,7 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 		else
 		{
 			mqtt_read_publish_payload_blocking(&app.client, payload, evt->param.publish.message.payload.len);
-			// payload[evt->param.publish.message.payload.len] = '\0';
+			payload[evt->param.publish.message.payload.len] = '\0';
 			err = json_obj_parse(payload, evt->param.publish.message.payload.len, obj_array_descr, ARRAY_SIZE(obj_array_descr), &out);
 			LOG_INF("err=%d/%d struct out.test=%d out.toto=%s", __builtin_popcount(err), ARRAY_SIZE(obj_array_descr), out.test, out.toto);
 		}
@@ -320,23 +320,6 @@ int wait(int timeout)
 	return ret;
 }
 
-static char *get_mqtt_payload(enum mqtt_qos qos)
-{
-	static APP_DMEM char payload[] = "{value: 0}";
-
-	// payload[strlen(payload) - 2] = '0' + gpio_pin_get_dt(&button);
-
-	return payload;
-}
-
-static char *get_mqtt_topic(uint8_t io_id)
-{
-	static char base[] = PANDUZA_TOPIC_BASE"/:io_XX_val";
-	base[strlen(base)-6] = '0' + io_id/10;
-	base[strlen(base)-5] = '0' + io_id%10;
-	return base;
-}
-
 int publish(struct mqtt_client *client, const char* topic, const char* payload, enum mqtt_qos qos, bool retain)
 {
 	struct mqtt_publish_param param;
@@ -389,8 +372,8 @@ static int try_to_connect(struct mqtt_client *client)
 
 	if (app.connected) {
 		struct mqtt_topic topics[] = {{
-			.topic = {.utf8 = "test",
-				.size = strlen("test")},
+			.topic = {.utf8 = "test/#",
+				.size = strlen("test/#")},
 			.qos = MQTT_QOS_0_AT_MOST_ONCE,
 		},
 		{
@@ -460,21 +443,8 @@ int publisher(void)
 
 	i = 0;
 	while (app.connected) {
-		r = -1;
-
-		// rc = mqtt_ping(&client);
-		// PRINT_RESULT("mqtt_ping", rc);
-		// SUCCESS_OR_BREAK(rc);
-
 		rc = process_mqtt_and_sleep(&app.client, 1);
 		SUCCESS_OR_BREAK(rc);
-
-		// rc = publish(&client, get_mqtt_topic(13), get_mqtt_payload(MQTT_QOS_0_AT_MOST_ONCE), MQTT_QOS_0_AT_MOST_ONCE, false);
-		// PRINT_RESULT("mqtt_publish", rc);
-		// SUCCESS_OR_BREAK(rc);
-		// k_msleep(10);
-
-		r = 0;
 	}
 
 	rc = mqtt_disconnect(&app.client);

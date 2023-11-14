@@ -14,3 +14,15 @@ void panduza_publish_info()
 {
     publish(&app.client, PANDUZA_TOPIC_BASE"/io/info", PANDUZA_IT_DIO_INFO, MQTT_QOS_0_AT_MOST_ONCE, true);
 }
+
+void panduza_handle_cmds(char* cmd, char *payload)
+{
+    if(strcmp(cmd, "direction") == 0)
+    {
+
+    }
+    else if(strcmp(cmd, "state") == 0)
+    {
+        
+    }
+}
