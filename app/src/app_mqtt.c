@@ -1,7 +1,7 @@
 #include <zephyr/net/mqtt.h>
 #include <zephyr/random/random.h>
 #include <zephyr/data/json.h>
-#include "config.h"
+#include "panduza.h"
 
 #include "app_mqtt.h"
 
@@ -326,7 +326,7 @@ static char *get_mqtt_payload(enum mqtt_qos qos)
 
 static char *get_mqtt_topic(uint8_t io_id)
 {
-	static char base[] = "pza/default/"CONFIG_BOARD"/:io_XX_val";
+	static char base[] = PANDUZA_TOPIC_BASE"/:io_XX_val";
 	base[strlen(base)-6] = '0' + io_id/10;
 	base[strlen(base)-5] = '0' + io_id%10;
 	return base;

@@ -16,20 +16,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          path: example-application
+          path: panduzaHA-ng
 
       - name: Initialize
-        working-directory: example-application
+        working-directory: panduzaHA-ng
         run: |
           west init -l .
           west update -o=--depth=1 -n
 
       - name: Build firmware
-        working-directory: example-application
+        working-directory: panduzaHA-ng
         run: |
           west twister -T app -v --inline-logs --integration
 
       - name: Twister Tests
-        working-directory: example-application
+        working-directory: panduzaHA-ng
         run: |
           west twister -T tests --integration

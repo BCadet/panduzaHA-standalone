@@ -47,8 +47,9 @@ void button_pressed(const struct device *dev, struct gpio_callback *cb,
 			io_json.value = gpio_pin_get(dev, i);
 			int status = json_obj_encode_buf(io_json_descr, ARRAY_SIZE(io_json_descr),
 						&io_json, json_encoded_buf, sizeof(json_encoded_buf));
-			static char topic[1024];
-			sprintf(topic, "pza/default/"CONFIG_BOARD"/io/io_%d", i);
+			char topic[] = PANDUZA_TOPIC_BASE"/io/io_XX";
+			topic[strlen(topic)-2] = '0' + i/10;
+			topic[strlen(topic)-1] = '0' + i%10;
 			publish(&app.client, topic, json_encoded_buf, MQTT_QOS_0_AT_MOST_ONCE, false);
 		}
 	}
