@@ -1,0 +1,6 @@
+[Service]
+ExecStart=/usr/sbin/pppd /dev/ttyACM%i 115200 192.0.1.2:192.0.1.1 lock nodetach noauth debug
+
+[Unit]
+Description=PanduzaHA-ng pppd daemon
+

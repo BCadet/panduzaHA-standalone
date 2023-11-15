@@ -1,0 +1,1 @@
+ACTION=="add", KERNEL=="ttyACM[0-9]*", SUBSYSTEM=="tty", ATTRS{serial}=="0664FF555349898667172152", TAG+="systemd", ENV{SYSTEMD_WANTS}="PanduzaHA-ng-pppd@%n.service"
