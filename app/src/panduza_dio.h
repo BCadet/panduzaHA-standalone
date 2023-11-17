@@ -2,6 +2,12 @@
 #define PANDUZA_DIO_H
 #pragma once
 
+#include <zephyr/drivers/gpio.h>
+
+#define PANDUZA_DIO_TYPE "dio"
+#define PANDUZA_DIO_VERSION "1.0.0"
+#define PANDUZA_DIO_INFO "{\"info\":{\"type\": \""PANDUZA_DIO_TYPE"\",\"version\":\""PANDUZA_DIO_VERSION"\",\"state\":\"run\"}}"
+
 typedef struct dio_state {
     bool active;
     bool active_low;
@@ -13,5 +19,17 @@ typedef struct dio_direction {
     char* pull;
     int polling_cycle;
 } dio_direction_t;
+
+typedef struct panduza_dio
+{
+    struct device *dev;
+    int pin;
+    dio_state_t state;
+    dio_direction_t direction;
+} dio_t;
+
+void panduza_dio_publish_direction(dio_t *dio);
+void panduza_dio_publish_state(dio_t *dio);
+void panduza_dio_publish_info(dio_t *dio);
 
 #endif

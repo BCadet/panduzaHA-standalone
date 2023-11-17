@@ -11,7 +11,6 @@
 #define PANDUZA_DIO_VERSION "1.0.0"
 #define PANDUZA_DIO_INFO "{\"info\":{\"type\": \""PANDUZA_DIO_TYPE"\",\"version\":\""PANDUZA_DIO_VERSION"\",\"state\":\"run\"}}"
 
-#include "app_mqtt.h"
 extern app_mqtt_t app;
 
 void panduza_publish_info()

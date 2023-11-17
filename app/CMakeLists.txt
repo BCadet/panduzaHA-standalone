@@ -9,5 +9,6 @@ set(app_sources
     src/main.c
     src/app_mqtt.c
     src/panduza.c
+    src/panduza_dio.c
 )
 target_sources(app PRIVATE ${app_sources})

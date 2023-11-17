@@ -65,23 +65,13 @@ static void broker_init(struct sockaddr_storage *broker)
 #endif
 }
 
-struct test_json
-{
-	int test;
-	char* toto;
-};
-
-const struct json_obj_descr obj_array_descr[] = {
-	JSON_OBJ_DESCR_PRIM(struct test_json, test, JSON_TOK_NUMBER),
-	JSON_OBJ_DESCR_PRIM(struct test_json, toto, JSON_TOK_STRING),
-};
+#include "panduza_dio.h"
+extern dio_t button_dio;
 
 void mqtt_evt_handler(struct mqtt_client *const client,
 		      const struct mqtt_evt *evt)
 {
 	int err;
-	unsigned char payload[1024];
-	struct test_json out;
 
 	switch (evt->type) {
 	case MQTT_EVT_CONNACK:
@@ -92,7 +82,8 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 
 		app.connected = true;
 		LOG_INF("MQTT client connected!");
-		panduza_publish_info();
+		panduza_dio_publish_info(&button_dio);
+		panduza_dio_publish_direction(&button_dio);
 		panduza_server_publish_info();
 		break;
 
@@ -146,22 +137,18 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 
 	case MQTT_EVT_PINGRESP:
 		LOG_INF("PINGRESP packet");
-		panduza_publish_info();
+		// panduza_publish_info();
 		panduza_server_publish_info();
 		break;
 
 	case MQTT_EVT_PUBLISH:
 		LOG_INF("PUBLISH event");
 		LOG_DBG("topic=%s [%d]", evt->param.publish.message.topic.topic.utf8, evt->param.publish.message.payload.len);
-		if(strncmp(evt->param.publish.message.topic.topic.utf8, "pza", evt->param.publish.message.topic.topic.size) == 0)
-			panduza_publish_info();
-		else
-		{
-			mqtt_read_publish_payload_blocking(&app.client, payload, evt->param.publish.message.payload.len);
-			payload[evt->param.publish.message.payload.len] = '\0';
-			err = json_obj_parse(payload, evt->param.publish.message.payload.len, obj_array_descr, ARRAY_SIZE(obj_array_descr), &out);
-			LOG_INF("err=%d/%d struct out.test=%d out.toto=%s", __builtin_popcount(err), ARRAY_SIZE(obj_array_descr), out.test, out.toto);
-		}
+		// if(strncmp(evt->param.publish.message.topic.topic.utf8, "pza", evt->param.publish.message.topic.topic.size) == 0)
+			// panduza_publish_info();
+		// else
+		// {
+		// }
 		break;
 
 	case MQTT_EVT_SUBACK:

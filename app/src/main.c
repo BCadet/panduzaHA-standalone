@@ -27,6 +27,9 @@ static struct gpio_callback button_cb_data;
 
 extern app_mqtt_t app;
 
+#include "panduza_dio.h"
+dio_t button_dio;
+
 void button_pressed(const struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
 {
@@ -36,9 +39,11 @@ void button_pressed(const struct device *dev, struct gpio_callback *cb,
 		{
 			gpio_flags_t flags = 0;
 			gpio_pin_get_config(dev, i, &flags);
-			LOG_INF("flags=%08x", flags);
-			panduza_push_dio_update(i, gpio_pin_get(dev, i), flags&GPIO_OUTPUT_INIT_LOW);
-			panduza_push_dio_direction(i, flags&GPIO_OUTPUT_INIT_LOGICAL, flags&GPIO_PULL_UP);
+			LOG_DBG("flags=%08x", flags);
+			panduza_dio_publish_state(&button_dio);
+			panduza_dio_publish_direction(&button_dio);
+			// panduza_push_dio_update(i, gpio_pin_get(dev, i), flags&GPIO_OUTPUT_INIT_LOW);
+			// panduza_push_dio_direction(i, flags&GPIO_OUTPUT_INIT_LOGICAL, flags&GPIO_PULL_UP);
 			return;
 		}
 	}
@@ -100,6 +105,10 @@ int main(void)
 	}
 	gpio_init_callback(&button_cb_data, button_pressed, BIT(button.pin));
 	gpio_add_callback(button.port, &button_cb_data);
+
+	button_dio.dev = button.port;
+	button_dio.pin = button.pin;
+
 #if defined(CONFIG_MQTT_LIB_TLS)
 	int rc;
 
