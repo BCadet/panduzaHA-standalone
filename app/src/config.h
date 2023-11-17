@@ -21,7 +21,6 @@
 #define SERVER_ADDR		"2001:db8::2"
 #else
 #define ZEPHYR_ADDR		"192.0.1.1"
-// #define SERVER_ADDR		"172.17.0.1"
 #define SERVER_ADDR		"192.0.1.2"
 #endif
 #endif

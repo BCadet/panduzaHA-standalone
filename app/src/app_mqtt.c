@@ -92,7 +92,8 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 
 		app.connected = true;
 		LOG_INF("MQTT client connected!");
-
+		panduza_publish_info();
+		panduza_server_publish_info();
 		break;
 
 	case MQTT_EVT_DISCONNECT:
@@ -145,6 +146,8 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 
 	case MQTT_EVT_PINGRESP:
 		LOG_INF("PINGRESP packet");
+		panduza_publish_info();
+		panduza_server_publish_info();
 		break;
 
 	case MQTT_EVT_PUBLISH:

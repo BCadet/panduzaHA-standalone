@@ -5,7 +5,7 @@
  */
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(panduzaHA_ng, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(panduzaHA_standalone, LOG_LEVEL_DBG);
 
 #include <zephyr/kernel.h>
 
@@ -25,32 +25,20 @@ static struct gpio_callback button_cb_data;
 
 #include "app_mqtt.h"
 
-#include <zephyr/data/json.h>
-
 extern app_mqtt_t app;
 
 void button_pressed(const struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
 {
-	struct io_json_struct {
-		int value;
-	} io_json = {0};
-
-	const struct json_obj_descr io_json_descr[] = {
-		JSON_OBJ_DESCR_PRIM(struct io_json_struct, value, JSON_TOK_NUMBER)
-	};
-	unsigned char json_encoded_buf[1024];
 	for(int i=0; i<32; i++)
 	{
 		if (pins & BIT(i))
 		{
-			io_json.value = gpio_pin_get(dev, i);
-			int status = json_obj_encode_buf(io_json_descr, ARRAY_SIZE(io_json_descr),
-						&io_json, json_encoded_buf, sizeof(json_encoded_buf));
-			char topic[] = PANDUZA_TOPIC_BASE"/:io_XX";
-			topic[strlen(topic)-2] = '0' + i/10;
-			topic[strlen(topic)-1] = '0' + i%10;
-			publish(&app.client, topic, json_encoded_buf, MQTT_QOS_0_AT_MOST_ONCE, false);
+			gpio_flags_t flags = 0;
+			gpio_pin_get_config(dev, i, &flags);
+			LOG_INF("flags=%08x", flags);
+			panduza_push_dio_update(i, gpio_pin_get(dev, i), flags&GPIO_OUTPUT_INIT_LOW);
+			panduza_push_dio_direction(i, flags&GPIO_OUTPUT_INIT_LOGICAL, flags&GPIO_PULL_UP);
 			return;
 		}
 	}

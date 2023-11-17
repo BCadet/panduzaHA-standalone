@@ -2,7 +2,7 @@
 
 / {
 	chosen {
-		zephyr,ppp_uart=&snippet_cdc_acm_console_uart;
+		zephyr,ppp_uart=&cdc_acm_uart;
 		zephyr,console = &uart0;
 	};
 
@@ -21,7 +21,7 @@
 };
 
 &zephyr_udc0 {
-	snippet_cdc_acm_console_uart: snippet_cdc_acm_console_uart {
+	cdc_acm_uart: cdc_acm_uart {
 		compatible = "zephyr,cdc-acm-uart";
 	};
 };
