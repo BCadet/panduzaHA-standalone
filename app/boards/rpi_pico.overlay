@@ -8,7 +8,7 @@
 
 	buttons {
 		compatible = "gpio-keys";
-		button1: button_1 {
+		user_button: button_1 {
 			label = "button1";
 			gpios = <&gpio0 12 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
 			zephyr,code = <INPUT_KEY_0>;
@@ -16,7 +16,7 @@
 	};
 
 	aliases {
-		sw0 = &button1;
+		sw0 = &user_button;
 	};
 };
 
