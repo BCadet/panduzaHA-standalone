@@ -19,8 +19,6 @@ LOG_MODULE_REGISTER(panduzaHA_standalone, LOG_LEVEL_DBG);
 #include "app_mqtt.h"
 #include "panduza_dio.h"
 
-extern app_mqtt_t app;
-
 static int start_app(void)
 {
 	int r = 0, i = 0;

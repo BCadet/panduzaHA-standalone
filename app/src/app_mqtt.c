@@ -66,7 +66,7 @@ static void broker_init(struct sockaddr_storage *broker)
 }
 
 #include "panduza_dio.h"
-
+char payload[1024];
 void mqtt_evt_handler(struct mqtt_client *const client,
 		      const struct mqtt_evt *evt)
 {
@@ -137,11 +137,18 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 		LOG_INF("PINGRESP packet");
 		// panduza_publish_info();
 		panduza_server_publish_info();
+		pza_dio_publish_all();
 		break;
 
 	case MQTT_EVT_PUBLISH:
 		LOG_INF("PUBLISH event");
 		LOG_DBG("topic=%s [%d]", evt->param.publish.message.topic.topic.utf8, evt->param.publish.message.payload.len);
+		mqtt_read_publish_payload_blocking(&app.client, payload, evt->param.publish.message.payload.len);
+		LOG_DBG("payload=%s", payload);
+		if(strstr(evt->param.publish.message.topic.topic.utf8, "dio-controller") != NULL)
+		{
+			pza_dio_handle_event(evt->param.publish.message.topic.topic.utf8, payload, evt->param.publish.message.payload.len);
+		}
 		// if(strncmp(evt->param.publish.message.topic.topic.utf8, "pza", evt->param.publish.message.topic.topic.size) == 0)
 			// panduza_publish_info();
 		// else
@@ -311,6 +318,7 @@ int wait(int timeout)
 int publish(struct mqtt_client *client, const char* topic, const char* payload, enum mqtt_qos qos, bool retain)
 {
 	struct mqtt_publish_param param;
+    // LOG_DBG("publish to topic %s", topic);
 
 	param.message.topic.qos = qos;
 	param.message.topic.topic.utf8 = (uint8_t *)topic;

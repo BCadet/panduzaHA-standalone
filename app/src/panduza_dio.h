@@ -35,5 +35,5 @@ void panduza_dio_publish_info(dio_t *dio);
 void pza_dio_init();
 void pza_dio_publish_all();
 void pza_dio_connect();
-
+void pza_dio_handle_event(char *topic, char *payload, uint32_t payload_length);
 #endif
