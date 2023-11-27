@@ -149,11 +149,6 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 		{
 			pza_dio_handle_event(evt->param.publish.message.topic.topic.utf8, payload, evt->param.publish.message.payload.len);
 		}
-		// if(strncmp(evt->param.publish.message.topic.topic.utf8, "pza", evt->param.publish.message.topic.topic.size) == 0)
-			// panduza_publish_info();
-		// else
-		// {
-		// }
 		break;
 
 	case MQTT_EVT_SUBACK:
@@ -318,7 +313,7 @@ int wait(int timeout)
 int publish(struct mqtt_client *client, const char* topic, const char* payload, enum mqtt_qos qos, bool retain)
 {
 	struct mqtt_publish_param param;
-    // LOG_DBG("publish to topic %s", topic);
+    LOG_DBG("publish to topic %s", topic);
 
 	param.message.topic.qos = qos;
 	param.message.topic.topic.utf8 = (uint8_t *)topic;

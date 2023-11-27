@@ -51,6 +51,6 @@
 
 #define APP_MQTT_BUFFER_SIZE	128
 
-#define MQTT_CLIENTID		"PanduzaHA-ng on " CONFIG_BOARD
+#define MQTT_CLIENTID		"PanduzaHA-standalone on " CONFIG_BOARD
 
 #endif

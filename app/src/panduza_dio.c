@@ -61,7 +61,9 @@ void panduza_dio_publish_direction(dio_t *dio)
     gpio_flags_t flags = 0;
     gpio_pin_get_config_dt(&dio->gpio, &flags);
 
-    dio->direction.value = (flags & GPIO_OUTPUT_INIT_LOGICAL) ? "out" : "in";
+    LOG_DBG("dio_%c%d flags=%x", dio->bank+'A', dio->gpio.pin, flags);
+
+    dio->direction.value = (flags & GPIO_INPUT) ? "in" : "out";
     dio->direction.pull = (flags & GPIO_PULL_UP) ? "up" : "down";
     dio->direction.polling_cycle = 1;
 
@@ -108,10 +110,8 @@ void dio_interrupt(const struct device *dev, struct gpio_callback *cb,
         {
             gpio_flags_t flags = 0;
             gpio_pin_get_config(dev, i, &flags);
-            LOG_DBG("dio=%d flags=%08x", i, flags);
             for (uint8_t j = 0; j < ARRAY_SIZE(pzaDIO); j++)
             {
-                LOG_DBG("pzaDIO[%d] is gpio%c%d", j, 'A' + pzaDIO[j].bank, pzaDIO[j].gpio.pin);
                 if (pzaDIO[j].gpio.pin == i && pzaDIO[j].gpio.port == dev)
                 {
                     panduza_dio_publish_state(&pzaDIO[j]);
@@ -185,7 +185,6 @@ void pza_dio_handle_event(char *topic, char *payload, uint32_t payload_length)
 {
     //detect dio
     char *dio_identifier = topic + sizeof(PANDUZA_TOPIC_BASE "/dio_") - 1;
-    LOG_DBG("%s", dio_identifier);
     char bank = *dio_identifier - 'A';
     int pin = (*(dio_identifier+1) - '0')*10 + (*(dio_identifier+2) - '0');
     LOG_DBG("parsed topic: bank=%c pin=%d", bank+'A', pin);
@@ -213,9 +212,28 @@ void pza_dio_handle_event(char *topic, char *payload, uint32_t payload_length)
         LOG_DBG("direction.pull=%s", dio->direction.pull);
         LOG_DBG("direction.polling_cycle=%d", dio->direction.polling_cycle);
         gpio_flags_t flags = 0;
-        flags |= (*dio->direction.value=='o' ? GPIO_OUTPUT : GPIO_INPUT) | (*dio->direction.pull=='u' ? GPIO_PULL_UP : GPIO_PULL_DOWN);
+        if(*dio->direction.value=='o')
+        {
+            flags = GPIO_OUTPUT;
+        }
+        else
+        {
+            flags = GPIO_INPUT;
+        }
         gpio_pin_configure_dt(&dio->gpio, flags);
-        // panduza_dio_publish_direction(dio);
+        // gpio_flags_t it;
+        // if(!(flags & GPIO_INPUT))
+        // {
+        //     LOG_DBG("disable interrupt");
+        //     it = GPIO_INT_DISABLE;
+        // }
+        // else
+        // {
+        //     LOG_DBG("enable interrupt");
+        //     it = GPIO_INT_EDGE_BOTH;
+        // }
+        // gpio_pin_interrupt_configure_dt(&dio->gpio, it);
+        panduza_dio_publish_direction(dio);
     }
     else if(*sub_topic == 's')
     {
@@ -225,7 +243,7 @@ void pza_dio_handle_event(char *topic, char *payload, uint32_t payload_length)
         LOG_DBG("state.active=%d", dio->state.active);
         LOG_DBG("state.active_low=%d", dio->state.active_low);
         LOG_DBG("state.polling_cycle=%d", dio->state.polling_cycle);
-        gpio_pin_set_dt(dio, dio->state.active);
-        // panduza_dio_publish_state(dio);
+        gpio_pin_set_dt(&dio->gpio, dio->state.active);
+        panduza_dio_publish_state(dio);
     }
 }
