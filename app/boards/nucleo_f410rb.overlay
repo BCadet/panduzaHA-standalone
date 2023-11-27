@@ -3,19 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/* This devicetree overlay file will be automatically picked by the Zephyr
- * build system when building the sample for the nucleo_f302r8 board. It shows
- * how the example-application can be built on sample boards already provided
- * by Zephyr.
- */
-
 / {
-	chosen {
-		zephyr,ppp_uart=&usart2;
-		zephyr,console = &usart1;
-	};
-};
+    chosen {
+        zephyr,ppp_uart=&usart2;
+        zephyr,console = &usart1;
+    };
 
-&gpioc {
-	status = "okay";
+    pza_dio: panduza-dio {
+        compatible = "panduza,dios";
+        #gpio-cells = <2>;
+        pza-gpios = <&gpioa 5 GPIO_ACTIVE_HIGH>,
+                    <&gpioc 13 GPIO_ACTIVE_LOW>;
+    };
 };

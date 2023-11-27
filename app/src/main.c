@@ -16,38 +16,10 @@ LOG_MODULE_REGISTER(panduzaHA_standalone, LOG_LEVEL_DBG);
 
 #include "config.h"
 #include "panduza.h"
-
-#include <zephyr/drivers/gpio.h>
-#define SW0_NODE DT_ALIAS(sw0)
-#define NODE DT_NODELABEL(user_button)
-static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(NODE, gpios, {0});
-static struct gpio_callback button_cb_data;
-
 #include "app_mqtt.h"
+#include "panduza_dio.h"
 
 extern app_mqtt_t app;
-
-#include "panduza_dio.h"
-dio_t button_dio;
-
-void button_pressed(const struct device *dev, struct gpio_callback *cb,
-		    uint32_t pins)
-{
-	for(int i=0; i<32; i++)
-	{
-		if (pins & BIT(i))
-		{
-			gpio_flags_t flags = 0;
-			gpio_pin_get_config(dev, i, &flags);
-			LOG_DBG("flags=%08x", flags);
-			panduza_dio_publish_state(&button_dio);
-			panduza_dio_publish_direction(&button_dio);
-			// panduza_push_dio_update(i, gpio_pin_get(dev, i), flags&GPIO_OUTPUT_INIT_LOW);
-			// panduza_push_dio_direction(i, flags&GPIO_OUTPUT_INIT_LOGICAL, flags&GPIO_PULL_UP);
-			return;
-		}
-	}
-}
 
 static int start_app(void)
 {
@@ -83,31 +55,7 @@ static K_HEAP_DEFINE(app_mem_pool, 1024 * 2);
 
 int main(void)
 {
-	int ret;
-	if (!gpio_is_ready_dt(&button)) {
-		printk("Error: button device %s is not ready\n",
-		       button.port->name);
-		return 0;
-	}
-
-	ret = gpio_pin_configure_dt(&button, GPIO_INPUT);
-	if (ret != 0) {
-		printk("Error %d: failed to configure %s pin %d\n",
-		       ret, button.port->name, button.pin);
-		return 0;
-	}
-
-	ret = gpio_pin_interrupt_configure_dt(&button, GPIO_INT_EDGE_BOTH);
-	if (ret != 0) {
-		printk("Error %d: failed to configure interrupt on %s pin %d\n",
-			ret, button.port->name, button.pin);
-		return 0;
-	}
-	gpio_init_callback(&button_cb_data, button_pressed, BIT(button.pin));
-	gpio_add_callback(button.port, &button_cb_data);
-
-	button_dio.dev = button.port;
-	button_dio.pin = button.pin;
+	pza_dio_init();
 
 #if defined(CONFIG_MQTT_LIB_TLS)
 	int rc;

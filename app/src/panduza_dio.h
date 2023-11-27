@@ -22,8 +22,8 @@ typedef struct dio_direction {
 
 typedef struct panduza_dio
 {
-    struct device *dev;
-    int pin;
+    struct gpio_dt_spec gpio;
+    char bank;
     dio_state_t state;
     dio_direction_t direction;
 } dio_t;
@@ -31,5 +31,9 @@ typedef struct panduza_dio
 void panduza_dio_publish_direction(dio_t *dio);
 void panduza_dio_publish_state(dio_t *dio);
 void panduza_dio_publish_info(dio_t *dio);
+
+void pza_dio_init();
+void pza_dio_publish_all();
+void pza_dio_connect();
 
 #endif

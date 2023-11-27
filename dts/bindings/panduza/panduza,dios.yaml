@@ -1,0 +1,27 @@
+# Copyright (c) 2021 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  Panduza DIOs device tree node
+
+  Example definition in devicetree:
+
+    pza_dio {
+        compatible = "panduza,dios";
+        dios = <0 &gpioa 5 GPIO_ACTIVE_HIGH>,
+               <1 &gpioc 13 GPIO_ACTIVE_LOW>;
+    };
+
+compatible: "panduza,dios"
+
+include: [base.yaml]
+
+properties:
+  pza-gpios:
+    type: phandle-array
+    required: true
+    description: array of DIOs to expose
+
+  "#gpio-cells":
+    type: int
+    const: 2

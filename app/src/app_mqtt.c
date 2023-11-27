@@ -66,7 +66,6 @@ static void broker_init(struct sockaddr_storage *broker)
 }
 
 #include "panduza_dio.h"
-extern dio_t button_dio;
 
 void mqtt_evt_handler(struct mqtt_client *const client,
 		      const struct mqtt_evt *evt)
@@ -82,9 +81,8 @@ void mqtt_evt_handler(struct mqtt_client *const client,
 
 		app.connected = true;
 		LOG_INF("MQTT client connected!");
-		panduza_dio_publish_info(&button_dio);
-		panduza_dio_publish_direction(&button_dio);
 		panduza_server_publish_info();
+		pza_dio_publish_all();
 		break;
 
 	case MQTT_EVT_DISCONNECT:
@@ -361,11 +359,7 @@ static int try_to_connect(struct mqtt_client *client)
 	}
 
 	if (app.connected) {
-		struct mqtt_topic topics[] = {{
-			.topic = {.utf8 = "test/#",
-				.size = strlen("test/#")},
-			.qos = MQTT_QOS_0_AT_MOST_ONCE,
-		},
+		struct mqtt_topic topics[] = {
 		{
 			.topic = {.utf8 = "pza",
 				.size = strlen("pza")},
@@ -380,6 +374,7 @@ static int try_to_connect(struct mqtt_client *client)
 		if (ret != 0) {
 			LOG_ERR("Failed to subscribe to topics: %d", ret);
 		}
+		pza_dio_connect();
 		return 0;
 	}
 
